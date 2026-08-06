@@ -40,3 +40,17 @@ npm run dev
 ```
 
 The Express API exposes `GET`, `POST`, `PATCH`, and `DELETE` endpoints at `/api/tasks`.
+
+## Authentication
+
+The client includes sign-in, signup, logout, persistent sessions, and a guest mode for trying the interface without a backend.
+
+For account authentication, run MongoDB and the server, copy `server/.env.example` to `server/.env`, and set a secure `JWT_SECRET`. The API provides:
+
+```text
+POST /api/auth/register
+POST /api/auth/login
+GET  /api/auth/me
+```
+
+Task API routes are JWT-protected and scoped to the authenticated user.

@@ -1,0 +1,10 @@
+import React, { useState } from 'react';
+import { Check, Sparkles } from 'lucide-react';
+import { useAuth } from './AuthContext';
+import './auth.css';
+export default function AuthScreen() {
+  const { login, register, continueAsGuest } = useAuth();
+  const [mode, setMode] = useState('login'); const [form, setForm] = useState({ name: '', email: '', password: '' }); const [error, setError] = useState(''); const [loading, setLoading] = useState(false);
+  const submit = async e => { e.preventDefault(); setLoading(true); setError(''); try { mode === 'login' ? await login(form) : await register(form); } catch (err) { setError(err.message); } finally { setLoading(false); } };
+  return <main className="auth-page"><section className="auth-card"><div className="auth-brand"><span><Check size={18}/></span>taskflow</div><span className="auth-icon"><Sparkles size={21}/></span><h1>{mode === 'login' ? 'Welcome back' : 'Create your account'}</h1><p>{mode === 'login' ? 'Sign in to keep your tasks in sync.' : 'Start organizing what matters most.'}</p><form onSubmit={submit}>{mode === 'register' && <label>Name<input required value={form.name} onChange={e => setForm({...form, name:e.target.value})} placeholder="Alex Johnson"/></label>}<label>Email address<input required type="email" value={form.email} onChange={e => setForm({...form, email:e.target.value})} placeholder="you@example.com"/></label><label>Password<input required minLength="6" type="password" value={form.password} onChange={e => setForm({...form, password:e.target.value})} placeholder="At least 6 characters"/></label>{error && <p className="auth-error">{error}</p>}<button className="primary auth-submit" disabled={loading}>{loading ? 'Please wait…' : mode === 'login' ? 'Sign in' : 'Create account'}</button></form><button className="guest-button" onClick={continueAsGuest}>Continue as guest</button><p className="auth-switch">{mode === 'login' ? 'New to Taskflow?' : 'Already have an account?'} <button onClick={() => { setMode(mode === 'login' ? 'register' : 'login'); setError(''); }}>{mode === 'login' ? 'Create an account' : 'Sign in'}</button></p></section></main>;
+}
