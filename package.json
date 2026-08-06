@@ -1,23 +1,14 @@
 {
-  "name": "smart-task-manager",
+  "name": "taskflow-workspace",
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview",
-    "server": "node server/index.js"
+    "client": "npm --prefix client run dev",
+    "dev": "npm --prefix client run dev",
+    "build": "npm --prefix client run build",
+    "preview": "npm --prefix client run preview",
+    "server": "npm --prefix server run dev"
   },
-  "dependencies": {
-    "@vitejs/plugin-react": "latest",
-    "vite": "latest",
-    "react": "latest",
-    "react-dom": "latest",
-    "lucide-react": "latest",
-    "cors": "latest",
-    "dotenv": "latest",
-    "express": "latest",
-    "mongoose": "latest"
-  },
+  "dependencies": {},
   "devDependencies": {}
 }
