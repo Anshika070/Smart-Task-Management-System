@@ -3,10 +3,7 @@ import SpeechRecognition, {
   useSpeechRecognition,
 } from "react-speech-recognition";
 
-export default function VoiceRecorder({
-  onTranscript,
-  disabled = false,
-}) {
+export default function VoiceRecorder({ onTranscript, disabled = false }) {
   const {
     transcript,
     listening,
@@ -30,14 +27,29 @@ export default function VoiceRecorder({
   }
 
   const handleClick = () => {
+    console.log("Button clicked");
+
+    console.log({
+      listening,
+      browserSupportsSpeechRecognition,
+      disabled,
+    });
+
     if (listening) {
       SpeechRecognition.stopListening();
     } else {
       resetTranscript();
+
       SpeechRecognition.startListening({
         continuous: false,
         language: "en-IN",
-      });
+      })
+        .then(() => {
+          console.log("Listening started");
+        })
+        .catch((err) => {
+          console.error("Speech error:", err);
+        });
     }
   };
 
