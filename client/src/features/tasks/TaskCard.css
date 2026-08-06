@@ -1,0 +1,1 @@
+.task-card .check{padding:0;line-height:0;flex:0 0 20px;display:grid;place-items:center}.task-card .check svg{display:block}.task-card.is-complete .check{width:20px;height:20px;padding:0;display:grid;place-items:center}
