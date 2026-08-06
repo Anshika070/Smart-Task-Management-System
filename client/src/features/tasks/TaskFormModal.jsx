@@ -1,8 +1,137 @@
-import React, { useState } from 'react';
-import { ListTodo, X } from 'lucide-react';
-import { localDate } from './taskHelpers';
-const defaultTask = { title: '', description: '', category: 'Work', priority: 'Medium', dueDate: localDate(), time: '' };
+import React, { useState } from "react";
+import { ListTodo, X } from "lucide-react";
+import { localDate } from "./taskHelpers";
+import VoiceRecorder from "../ai/VoiceRecorder";
+import { aiService } from "../../services/aiService";
+
+const defaultTask = {
+  title: "",
+  description: "",
+  category: "Work",
+  priority: "Medium",
+  dueDate: localDate(),
+  time: "",
+};
+
 export default function TaskFormModal({ task, onClose, onSave }) {
-  const [form, setForm] = useState(task || defaultTask); const change = event => setForm({...form, [event.target.name]: event.target.value});
-  return <div className="overlay"><form className="modal" onSubmit={event => {event.preventDefault(); onSave(form); onClose();}}><button type="button" className="close" onClick={onClose}><X/></button><span className="modal-icon"><ListTodo/></span><h2>{task ? 'Edit task' : 'Create a new task'}</h2><p>Give your work a clear home and a next step.</p><label>Task name<input name="title" required autoFocus value={form.title} onChange={change}/></label><label>Description<textarea name="description" value={form.description} onChange={change}/></label><div className="two-cols"><label>Category<select name="category" value={form.category} onChange={change}><option>Work</option><option>Personal</option><option>Health</option></select></label><label>Priority<select name="priority" value={form.priority} onChange={change}><option>Low</option><option>Medium</option><option>High</option></select></label></div><div className="two-cols"><label>Due date<input name="dueDate" type="date" value={form.dueDate} onChange={change}/></label><label>Time<input name="time" type="time" value={form.time} onChange={change}/></label></div><button className="primary full">{task ? 'Save changes' : 'Create task'}</button></form></div>;
+  const [form, setForm] = useState(task || defaultTask);
+
+  const change = (event) => {
+    setForm({
+      ...form,
+      [event.target.name]: event.target.value,
+    });
+  };
+
+  const handleTranscript = async (text) => {
+    try {
+      const task = await aiService.extractTask(text);
+
+      setForm((prev) => ({
+        ...prev,
+        title: task.title,
+        description: task.description,
+        category: task.category,
+        priority: task.priority,
+        dueDate: task.dueDate,
+        time: task.time,
+      }));
+    } catch (error) {
+      console.error(error);
+      alert("AI could not understand the task.");
+    }
+  };
+
+  return (
+    <div className="overlay">
+      <form
+        className="modal"
+        onSubmit={(event) => {
+          event.preventDefault();
+          onSave(form);
+          onClose();
+        }}
+      >
+        <button type="button" className="close" onClick={onClose}>
+          <X />
+        </button>
+
+        <span className="modal-icon">
+          <ListTodo />
+        </span>
+
+        <h2>{task ? "Edit task" : "Create a new task"}</h2>
+
+        <p>Give your work a clear home and a next step.</p>
+
+        <VoiceRecorder onTranscript={handleTranscript} />
+
+        <label>
+          Task name
+          <input
+            name="title"
+            required
+            autoFocus
+            value={form.title}
+            onChange={change}
+          />
+        </label>
+
+        <label>
+          Description
+          <textarea
+            name="description"
+            value={form.description}
+            onChange={change}
+          />
+        </label>
+
+        <div className="two-cols">
+          <label>
+            Category
+            <select name="category" value={form.category} onChange={change}>
+              <option>Work</option>
+              <option>Personal</option>
+              <option>Health</option>
+            </select>
+          </label>
+
+          <label>
+            Priority
+            <select name="priority" value={form.priority} onChange={change}>
+              <option>Low</option>
+              <option>Medium</option>
+              <option>High</option>
+            </select>
+          </label>
+        </div>
+
+        <div className="two-cols">
+          <label>
+            Due date
+            <input
+              name="dueDate"
+              type="date"
+              value={form.dueDate}
+              onChange={change}
+            />
+          </label>
+
+          <label>
+            Time
+            <input
+              name="time"
+              type="time"
+              value={form.time}
+              onChange={change}
+            />
+          </label>
+        </div>
+
+        <button className="primary full">
+          {task ? "Save changes" : "Create task"}
+        </button>
+      </form>
+    </div>
+  );
 }
