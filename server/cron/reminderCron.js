@@ -4,7 +4,6 @@ const User = require("../models/User");
 const { sendReminderEmail } = require("../services/emailService");
 
 cron.schedule("* * * * *", async () => {
-
   try {
     const now = new Date();
 
@@ -40,6 +39,13 @@ cron.schedule("* * * * *", async () => {
       const user = await User.findById(task.user);
 
       if (!user) continue;
+
+      console.log("================================");
+      console.log("Current Time :", now);
+      console.log("Created At   :", task.createdAt);
+      console.log("Due DateTime :", task.dueDateTime);
+      console.log("ReminderTime :", task.reminderTime);
+      console.log("================================");
 
       await sendReminderEmail(user, task);
 
