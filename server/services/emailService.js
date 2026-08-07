@@ -11,11 +11,16 @@ const transporter = nodemailer.createTransport({
 function getRemainingTime(dueDateTime) {
   const now = new Date();
   const due = new Date(dueDateTime);
-  console.log("EMAIL NOW :", now.toISOString());
-  console.log("EMAIL DUE :", due.toISOString());
-  console.log("EMAIL DIFF:", (due.getTime() - now.getTime()) / 1000);
 
-  let diff = due.getTime() - now.getTime();
+  const diff = due.getTime() - now.getTime();
+
+  console.log("========== EMAIL DEBUG ==========");
+  console.log("NOW           :", now.toISOString());
+  console.log("DUE           :", due.toISOString());
+  console.log("DIFF(ms)      :", diff);
+  console.log("DIFF(seconds) :", diff / 1000);
+  console.log("DIFF(minutes) :", diff / 60000);
+  console.log("================================");
 
   if (diff <= 0) {
     return {
@@ -26,13 +31,15 @@ function getRemainingTime(dueDateTime) {
     };
   }
 
-  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-  diff %= 1000 * 60 * 60 * 24;
+  let remaining = diff;
 
-  const hours = Math.floor(diff / (1000 * 60 * 60));
-  diff %= 1000 * 60 * 60;
+  const days = Math.floor(remaining / (1000 * 60 * 60 * 24));
+  remaining %= 1000 * 60 * 60 * 24;
 
-  const minutes = Math.floor(diff / (1000 * 60));
+  const hours = Math.floor(remaining / (1000 * 60 * 60));
+  remaining %= 1000 * 60 * 60;
+
+  const minutes = Math.floor(remaining / (1000 * 60));
 
   const parts = [];
 
@@ -40,11 +47,11 @@ function getRemainingTime(dueDateTime) {
   if (hours) parts.push(`${hours} hour${hours > 1 ? "s" : ""}`);
   if (minutes) parts.push(`${minutes} minute${minutes > 1 ? "s" : ""}`);
 
-  if (!parts.length) parts.push("less than a minute");
+  if (!parts.length) {
+    parts.push("less than a minute");
+  }
 
-  const text = parts.join(" ");
-
-  const totalHours = days * 24 + hours + minutes / 60;
+  const totalHours = diff / (1000 * 60 * 60);
 
   let color = "#16a34a";
   let emoji = "🟢";
@@ -53,7 +60,8 @@ function getRemainingTime(dueDateTime) {
   if (totalHours <= 24) {
     color = "#f59e0b";
     emoji = "🟡";
-    message = "Less than 24 hours remain. Consider completing this task today.";
+    message =
+      "Less than 24 hours remain. Consider completing this task today.";
   }
 
   if (totalHours <= 1) {
@@ -64,7 +72,7 @@ function getRemainingTime(dueDateTime) {
   }
 
   return {
-    text,
+    text: parts.join(" "),
     color,
     emoji,
     message,
