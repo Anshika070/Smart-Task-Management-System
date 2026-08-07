@@ -17,8 +17,11 @@ export default function TaskCard({ task, onToggle, onEdit, onDelete }) {
     });
   return (
     <article className={`task-card ${task.completed ? "is-complete" : ""}`}>
-      <button className="check" onClick={() => onToggle(task.id)}>
-        {task.completed ? <Check size={14} /> : <Circle size={19} />}
+      <button
+        className={`check ${task.completed ? "completed" : ""}`}
+        onClick={() => onToggle(task._id)}
+      >
+        {task.completed && <Check size={14} color="white" strokeWidth={3} />}
       </button>
       <div className="task-copy">
         <h3>{task.title}</h3>
@@ -39,7 +42,7 @@ export default function TaskCard({ task, onToggle, onEdit, onDelete }) {
       <button onClick={onEdit}>
         <MoreHorizontal size={20} />
       </button>
-      <button className="danger" onClick={() => onDelete(task.id)}>
+      <button className="danger" onClick={() => onDelete(task._id)}>
         <Trash2 size={17} />
       </button>
     </article>

@@ -28,7 +28,7 @@ export default function App() {
   }, [dark]);
 
   const todayTasks = tasks.filter((task) => {
-    if (!task.dueDate || task.completed) return false;
+    if (!task.dueDate) return false;
 
     const taskDate = new Date(task.dueDate).toLocaleDateString("en-CA");
     const today = new Date().toLocaleDateString("en-CA");
@@ -107,7 +107,7 @@ export default function App() {
           <div className="tasks">
             {taskCards.map((task) => (
               <TaskCard
-                key={task.id}
+                key={task._id}
                 task={task}
                 onToggle={toggle}
                 onEdit={() => setEditing(task)}
@@ -194,7 +194,7 @@ export default function App() {
       )}
       {editing && (
         <TaskFormModal
-          task={editing.id ? editing : null}
+           task={editing?._id ? editing : null}
           onClose={() => setEditing(null)}
           onSave={save}
         />

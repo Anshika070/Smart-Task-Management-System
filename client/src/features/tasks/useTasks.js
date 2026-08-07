@@ -23,9 +23,7 @@ export function useTasks() {
         const updated = await taskService.update(task._id, task);
 
         setTasks((items) =>
-          items.map((item) =>
-            item._id === updated._id ? updated : item
-          )
+          items.map((item) => (item._id === updated._id ? updated : item)),
         );
       } else {
         const created = await taskService.create(task);
@@ -39,24 +37,21 @@ export function useTasks() {
 
   async function toggle(id) {
     const task = tasks.find((t) => t._id === id);
+    
 
     const updated = await taskService.update(id, {
       completed: !task.completed,
     });
 
     setTasks((items) =>
-      items.map((item) =>
-        item._id === updated._id ? updated : item
-      )
+      items.map((item) => (item._id === updated._id ? updated : item)),
     );
   }
 
   async function remove(id) {
     await taskService.remove(id);
 
-    setTasks((items) =>
-      items.filter((item) => item._id !== id)
-    );
+    setTasks((items) => items.filter((item) => item._id !== id));
   }
 
   return {

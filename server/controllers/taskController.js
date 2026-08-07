@@ -54,28 +54,33 @@ exports.updateTask = async (req, res, next) => {
   try {
     const updates = { ...req.body };
 
-    // Recalculate reminder if due date or time changes
-    if (updates.dueDate && updates.time) {
-      const createdTime = new Date();
+    // First fetch the existing task
+    const existingTask = await Task.findOne({
+      _id: req.params.id,
+      user: req.user._id,
+    });
 
-      // Build deadline in IST
+    if (!existingTask) {
+      return res.status(404).json({
+        message: "Task not found",
+      });
+    }
+
+    // Use new values if provided, otherwise existing ones
+    const dueDate = updates.dueDate || existingTask.dueDate;
+    const time = updates.time || existingTask.time;
+
+    if (dueDate && time) {
       const dueDateTime = new Date(
-        `${updates.dueDate}T${updates.time}:00+05:30`
+        `${new Date(dueDate).toISOString().slice(0, 10)}T${time}:00+05:30`
       );
 
       updates.dueDateTime = dueDateTime;
 
-      // Reminder 1 minute before deadline
       updates.reminderTime = new Date(
-        dueDateTime.getTime() - 1 * 60 * 1000
+        dueDateTime.getTime() - 60 * 1000
       );
 
-      // If less than 1 minute remains, remind immediately
-      if (updates.reminderTime < createdTime) {
-        updates.reminderTime = createdTime;
-      }
-
-      // Allow reminder to be sent again after editing
       updates.reminderSent = false;
     }
 
@@ -91,14 +96,9 @@ exports.updateTask = async (req, res, next) => {
       }
     );
 
-    if (!task) {
-      return res.status(404).json({
-        message: "Task not found",
-      });
-    }
-
     res.json(task);
   } catch (error) {
+    console.error(error);
     next(error);
   }
 };
