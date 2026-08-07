@@ -74,11 +74,11 @@ exports.updateTask = async (req, res, next) => {
         const halfDuration =
           (dueDateTime.getTime() - createdTime.getTime()) / 2;
 
-        updates.reminderTime = new Date(createdTime.getTime() + halfDuration);
+        reminderTime = new Date(createdTime.getTime() + halfDuration);
 
-        // Since the task has been rescheduled,
-        // allow a reminder to be sent again.
-        updates.reminderSent = false;
+        console.log("Created Time :", createdTime);
+        console.log("Due Date Time:", dueDateTime);
+        console.log("Reminder Time:", reminderTime);
       } else {
         updates.reminderTime = null;
         updates.reminderSent = false;
