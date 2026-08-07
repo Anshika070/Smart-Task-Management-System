@@ -30,6 +30,12 @@ exports.createTask = async (req, res, next) => {
       const [hours, minutes] = time.split(":").map(Number);
 
       dueDateTime = new Date(year, month - 1, day, hours, minutes, 0, 0);
+      console.log("Created Time   :", createdTime);
+      console.log("Due Date Time  :", dueDateTime);
+      console.log(
+        "Difference(min):",
+        (dueDateTime.getTime() - createdTime.getTime()) / 60000,
+      );
 
       if (dueDateTime > createdTime) {
         const halfDuration =
