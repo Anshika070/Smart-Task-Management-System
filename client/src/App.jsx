@@ -27,9 +27,14 @@ export default function App() {
     localStorage.setItem("taskflow-theme", dark ? "dark" : "light");
   }, [dark]);
 
-  const todayTasks = tasks.filter(
-    (task) => task.dueDate === localDate() && !task.completed,
-  );
+  const todayTasks = tasks.filter((task) => {
+    if (!task.dueDate || task.completed) return false;
+
+    const taskDate = new Date(task.dueDate).toLocaleDateString("en-CA");
+    const today = new Date().toLocaleDateString("en-CA");
+
+    return taskDate === today;
+  });
   const completed = tasks.filter((task) => task.completed).length;
   const visibleTasks = useMemo(
     () =>
