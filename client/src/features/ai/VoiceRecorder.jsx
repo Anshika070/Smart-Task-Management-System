@@ -3,7 +3,10 @@ import SpeechRecognition, {
   useSpeechRecognition,
 } from "react-speech-recognition";
 
-export default function VoiceRecorder({ onTranscript, disabled = false }) {
+export default function VoiceRecorder({
+  onTranscript,
+  disabled = false,
+}) {
   const {
     transcript,
     listening,
@@ -16,7 +19,7 @@ export default function VoiceRecorder({ onTranscript, disabled = false }) {
       onTranscript(transcript);
       resetTranscript();
     }
-  }, [listening]);
+  }, [listening, transcript, onTranscript, resetTranscript]);
 
   if (!browserSupportsSpeechRecognition) {
     return (
@@ -26,7 +29,7 @@ export default function VoiceRecorder({ onTranscript, disabled = false }) {
     );
   }
 
-  const handleClick = () => {
+  const handleClick = async () => {
     console.log("Button clicked");
 
     console.log({
@@ -37,19 +40,20 @@ export default function VoiceRecorder({ onTranscript, disabled = false }) {
 
     if (listening) {
       SpeechRecognition.stopListening();
-    } else {
-      resetTranscript();
+      return;
+    }
 
-      SpeechRecognition.startListening({
+    resetTranscript();
+
+    try {
+      await SpeechRecognition.startListening({
         continuous: false,
         language: "en-IN",
-      })
-        .then(() => {
-          console.log("Listening started");
-        })
-        .catch((err) => {
-          console.error("Speech error:", err);
-        });
+      });
+
+      console.log("Listening started");
+    } catch (err) {
+      console.error("Speech Recognition Error:", err);
     }
   };
 
@@ -67,7 +71,8 @@ export default function VoiceRecorder({ onTranscript, disabled = false }) {
         background: listening ? "#ef4444" : "#7c3aed",
         color: "white",
         fontWeight: "bold",
-        cursor: "pointer",
+        cursor: disabled ? "not-allowed" : "pointer",
+        opacity: disabled ? 0.6 : 1,
       }}
     >
       {listening ? "🎙 Listening..." : "🎤 Speak Task"}

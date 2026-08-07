@@ -1,3 +1,41 @@
-import React from 'react';
-import { Sparkles, X } from 'lucide-react';
-export default function AiPlanner({ tasks, onClose }) { const first = tasks.find(task => task.priority === 'High') || tasks[0]; return <div className="overlay"><div className="modal ai"><button className="close" onClick={onClose}><X/></button><span className="modal-icon"><Sparkles/></span><h2>Your smart plan</h2><p>Based on today’s schedule, here’s a realistic way to make progress.</p><div className="suggestion"><b>Start with deep work</b><span>Block 60 minutes for “{first?.title || 'your most important task'}” before checking messages.</span></div><div className="suggestion"><b>Batch quick wins</b><span>Group small admin tasks together after your focused work session.</span></div><div className="suggestion"><b>Protect your momentum</b><span>Completing two important tasks makes today a success.</span></div><button className="primary full" onClick={onClose}>Sounds good</button></div></div> }
+import React from "react";
+import { Sparkles, X } from "lucide-react";
+export default function AiPlanner({ tasks, onClose }) {
+  const first = tasks.find((task) => task.priority === "High") || tasks[0];
+  return (
+    <div className="overlay">
+      <div className="modal ai">
+        <button className="close" onClick={onClose}>
+          <X />
+        </button>
+        <span className="modal-icon">
+          <Sparkles />
+        </span>
+        <h2>Your smart plan</h2>
+        <p>
+          Based on today’s schedule, here’s a realistic way to make progress.
+        </p>
+        <div className="suggestion">
+          <b>Start with deep work</b>
+          <span>
+            Block 60 minutes for “{first?.title || "your most important task"}”
+            before checking messages.
+          </span>
+        </div>
+        <div className="suggestion">
+          <b>Batch quick wins</b>
+          <span>
+            Group small admin tasks together after your focused work session.
+          </span>
+        </div>
+        <div className="suggestion">
+          <b>Protect your momentum</b>
+          <span>Completing two important tasks makes today a success.</span>
+        </div>
+        <button className="primary full" onClick={onClose}>
+          Sounds good
+        </button>
+      </div>
+    </div>
+  );
+}
