@@ -22,14 +22,12 @@ exports.createTask = async (req, res, next) => {
     if (dueDate && time) {
       const createdTime = new Date();
 
-      // Build exact deadline
-      dueDateTime = new Date(dueDate);
-
+      // Build date manually to avoid timezone bugs
+      const [year, month, day] = dueDate.split("-").map(Number);
       const [hours, minutes] = time.split(":").map(Number);
 
-      dueDateTime.setHours(hours, minutes, 0, 0);
+      dueDateTime = new Date(year, month - 1, day, hours, minutes, 0, 0);
 
-      // Only calculate reminder for future tasks
       if (dueDateTime > createdTime) {
         const halfDuration =
           (dueDateTime.getTime() - createdTime.getTime()) / 2;
@@ -41,7 +39,6 @@ exports.createTask = async (req, res, next) => {
     const task = await Task.create({
       ...req.body,
       user: req.user._id,
-
       dueDateTime,
       reminderTime,
       reminderSent: false,
