@@ -15,6 +15,9 @@ exports.getTasks = async (req, res, next) => {
 exports.createTask = async (req, res, next) => {
   try {
     const { dueDate, time } = req.body;
+    console.log("Received dueDate:", dueDate);
+    console.log("Received time:", time);
+    console.log("Received body:", req.body);
 
     let dueDateTime = null;
     let reminderTime = null;
