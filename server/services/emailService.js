@@ -14,13 +14,6 @@ function getRemainingTime(dueDateTime) {
 
   const diff = due.getTime() - now.getTime();
 
-  console.log("========== EMAIL DEBUG ==========");
-  console.log("NOW           :", now.toISOString());
-  console.log("DUE           :", due.toISOString());
-  console.log("DIFF(ms)      :", diff);
-  console.log("DIFF(seconds) :", diff / 1000);
-  console.log("DIFF(minutes) :", diff / 60000);
-  console.log("================================");
 
   if (diff <= 0) {
     return {

@@ -15,9 +15,6 @@ exports.getTasks = async (req, res, next) => {
 exports.createTask = async (req, res, next) => {
   try {
     const { dueDate, time } = req.body;
-    console.log("Received dueDate:", dueDate);
-    console.log("Received time:", time);
-    console.log("Received body:", req.body);
 
     let dueDateTime = null;
     let reminderTime = null;
@@ -25,18 +22,16 @@ exports.createTask = async (req, res, next) => {
     if (dueDate && time) {
       const createdTime = new Date();
 
-      // Build date manually to avoid timezone bugs
-      const [year, month, day] = dueDate.split("-").map(Number);
-      const [hours, minutes] = time.split(":").map(Number);
-
+      // Build deadline in IST
       dueDateTime = new Date(`${dueDate}T${time}:00+05:30`);
-      console.log("Due Date Time:", dueDateTime);
 
-      if (dueDateTime > createdTime) {
-        const halfDuration =
-          (dueDateTime.getTime() - createdTime.getTime()) / 2;
+      // Reminder 1 minute before deadline
+      reminderTime = new Date(dueDateTime.getTime() - 1 * 60 * 1000);
 
-        reminderTime = new Date(createdTime.getTime() + halfDuration);
+      // If user creates a task less than 1 minute before deadline,
+      // send reminder immediately.
+      if (reminderTime < createdTime) {
+        reminderTime = createdTime;
       }
     }
 
@@ -54,6 +49,7 @@ exports.createTask = async (req, res, next) => {
     next(error);
   }
 };
+
 exports.updateTask = async (req, res, next) => {
   try {
     const updates = { ...req.body };
@@ -62,27 +58,25 @@ exports.updateTask = async (req, res, next) => {
     if (updates.dueDate && updates.time) {
       const createdTime = new Date();
 
-      const dueDateTime = new Date(updates.dueDate);
-
-      const [hours, minutes] = updates.time.split(":").map(Number);
-
-      dueDateTime.setHours(hours, minutes, 0, 0);
+      // Build deadline in IST
+      const dueDateTime = new Date(
+        `${updates.dueDate}T${updates.time}:00+05:30`
+      );
 
       updates.dueDateTime = dueDateTime;
 
-      if (dueDateTime > createdTime) {
-        const halfDuration =
-          (dueDateTime.getTime() - createdTime.getTime()) / 2;
+      // Reminder 1 minute before deadline
+      updates.reminderTime = new Date(
+        dueDateTime.getTime() - 1 * 60 * 1000
+      );
 
-        reminderTime = new Date(createdTime.getTime() + halfDuration);
-
-        console.log("Created Time :", createdTime);
-        console.log("Due Date Time:", dueDateTime);
-        console.log("Reminder Time:", reminderTime);
-      } else {
-        updates.reminderTime = null;
-        updates.reminderSent = false;
+      // If less than 1 minute remains, remind immediately
+      if (updates.reminderTime < createdTime) {
+        updates.reminderTime = createdTime;
       }
+
+      // Allow reminder to be sent again after editing
+      updates.reminderSent = false;
     }
 
     const task = await Task.findOneAndUpdate(
@@ -94,7 +88,7 @@ exports.updateTask = async (req, res, next) => {
       {
         new: true,
         runValidators: true,
-      },
+      }
     );
 
     if (!task) {
@@ -108,6 +102,7 @@ exports.updateTask = async (req, res, next) => {
     next(error);
   }
 };
+
 exports.deleteTask = async (req, res, next) => {
   try {
     const task = await Task.findOneAndDelete({
