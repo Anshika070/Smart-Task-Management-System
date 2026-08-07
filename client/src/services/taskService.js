@@ -1,7 +1,64 @@
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/tasks';
+const API_URL =
+  import.meta.env.VITE_API_URL || "http://localhost:5000/api/tasks";
+
+function getHeaders() {
+  const token = localStorage.getItem("token");
+
+  return {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${token}`,
+  };
+}
+
 export const taskService = {
-  getAll: () => fetch(API_URL).then(r => r.ok ? r.json() : Promise.reject(r)),
-  create: task => fetch(API_URL, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(task) }).then(r => r.json()),
-  update: (id, changes) => fetch(`${API_URL}/${id}`, { method: 'PATCH', headers: {'Content-Type':'application/json'}, body: JSON.stringify(changes) }).then(r => r.json()),
-  remove: id => fetch(`${API_URL}/${id}`, { method: 'DELETE' })
+  async getAll() {
+    const response = await fetch(API_URL, {
+      headers: getHeaders(),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch tasks");
+    }
+
+    return response.json();
+  },
+
+  async create(task) {
+    const response = await fetch(API_URL, {
+      method: "POST",
+      headers: getHeaders(),
+      body: JSON.stringify(task),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to create task");
+    }
+
+    return response.json();
+  },
+
+  async update(id, changes) {
+    const response = await fetch(`${API_URL}/${id}`, {
+      method: "PATCH",
+      headers: getHeaders(),
+      body: JSON.stringify(changes),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to update task");
+    }
+
+    return response.json();
+  },
+
+  async remove(id) {
+    const response = await fetch(`${API_URL}/${id}`, {
+      method: "DELETE",
+      headers: getHeaders(),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to delete task");
+    }
+  },
 };
