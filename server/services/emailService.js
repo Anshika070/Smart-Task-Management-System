@@ -11,6 +11,9 @@ const transporter = nodemailer.createTransport({
 function getRemainingTime(dueDateTime) {
   const now = new Date();
   const due = new Date(dueDateTime);
+  console.log("EMAIL NOW :", now.toISOString());
+  console.log("EMAIL DUE :", due.toISOString());
+  console.log("EMAIL DIFF:", (due.getTime() - now.getTime()) / 1000);
 
   let diff = due.getTime() - now.getTime();
 
